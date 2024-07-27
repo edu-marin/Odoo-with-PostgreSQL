@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: odoo_db
+      POSTGRES_USER: odoo_user
+      POSTGRES_PASSWORD: odoo_password
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    networks:
+      - odoo-net
+
+  odoo:
+    image: odoo:14
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    environment:
+      HOST: db
+      USER: odoo_user
+      PASSWORD: odoo_password
+    volumes:
+      - odoo-data:/var/lib/odoo
+    command: odoo -d odoo_db -i base
+    networks:
+      - odoo-net
+
+volumes:
+  odoo-db-data:
+  odoo-data:
+
+networks:
+  odoo-net:
